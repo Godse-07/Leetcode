@@ -1,28 +1,66 @@
 class Solution {
-    public int largestRectangleArea(int[] heights) {
+    public int largestRectangleArea(int[] arr) {
+        return helper(arr);
+    }
+
+    public static int helper(int arr[]) {
+        int n = arr.length;
+
+        int left[] = NSL(arr);
+        int right[] = NSR(arr);
+
+        int max = Integer.MIN_VALUE;
+
+        for (int i = 0; i < n; i++) {
+            int width = right[i] - left[i] - 1;
+            int area = arr[i] * width;
+            max = Math.max(area, max);
+        }
+
+        return max;
+    }
+
+    public static int[] NSL(int arr[]) {
         Stack<Integer> st = new Stack<>();
-        int maxArea = 0;
-        int n = heights.length;
+        int left[] = new int[arr.length];
 
-        for (int i = 0; i <= n; i++) {
+        for (int i = 0; i < arr.length; i++) {
 
-            int currHeight = (i == n) ? 0 : heights[i];
+            while (!st.isEmpty() && arr[st.peek()] >= arr[i]) {
+                st.pop();
+            }
 
-            while (!st.isEmpty() && currHeight < heights[st.peek()]) {
-
-                int height = heights[st.pop()];
-
-                int right = i;
-                int left = st.isEmpty() ? -1 : st.peek();
-
-                int width = right - left - 1;
-
-                maxArea = Math.max(maxArea, height * width);
+            if (st.isEmpty()) {
+                left[i] = -1;
+            } else {
+                left[i] = st.peek();
             }
 
             st.push(i);
         }
 
-        return maxArea;
+        return left;
+    }
+
+    public static int[] NSR(int arr[]) {
+        Stack<Integer> st = new Stack<>();
+        int right[] = new int[arr.length];
+
+        for (int i = arr.length - 1; i >= 0; i--) {
+
+            while (!st.isEmpty() && arr[st.peek()] >= arr[i]) {
+                st.pop();
+            }
+
+            if (st.isEmpty()) {
+                right[i] = arr.length;
+            } else {
+                right[i] = st.peek();
+            }
+
+            st.push(i);
+        }
+
+        return right;
     }
 }
